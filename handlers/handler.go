@@ -4,18 +4,30 @@ import "github.com/bwmarrin/discordgo"
 
 type Handler interface {
 	InitHandlers(bot *discordgo.Session)
-	MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
+	messageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 }
 
 type handler struct {
 }
 
-func (h *handler) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (h *handler) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
 
+	if m.Content == "ping" {
+		s.ChannelMessageSend(m.ChannelID, "pong")
+	}
+
+	if m.Content == "pong" {
+		s.ChannelMessageSend(m.ChannelID, "ping")
+	}
 }
 
 func (h *handler) InitHandlers(bot *discordgo.Session) {
-	bot.AddHandler(h.MessageCreate)
+	bot.Identify.Intents = discordgo.IntentsGuildMessages
+
+	bot.AddHandler(h.messageCreate)
 }
 
 func NewHandler() Handler {
