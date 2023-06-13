@@ -11,7 +11,7 @@ type handler struct {
 }
 
 func (h *handler) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
+	if m.Author.ID == s.State.User.ID { // don't reply to self
 		return
 	}
 

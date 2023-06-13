@@ -11,11 +11,6 @@ import (
 	handler "github.com/bensiauu/discord-bot/handlers"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
-	"gopkg.in/yaml.v3"
-)
-
-var (
-	cfgPath = "CONFIG_PATH"
 )
 
 func init() {
@@ -26,18 +21,11 @@ func init() {
 }
 
 func main() {
-
-	buf, err := os.ReadFile(os.Getenv(cfgPath))
+	cfg, err := config.ParseConfig()
 	if err != nil {
-		log.Fatal("failed to read config file", err)
+		log.Fatal(err)
 	}
 
-	cfg := &config.Config{}
-
-	err = yaml.Unmarshal(buf, cfg)
-	if err != nil {
-		log.Fatal("could not parse config file")
-	}
 	bot, err := discordgo.New("Bot " + cfg.Authorization.Token)
 	if err != nil {
 		log.Fatal("failed to initialize bot")
